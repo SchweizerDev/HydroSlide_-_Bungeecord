@@ -18,10 +18,10 @@ public class CoinsRepository {
         this.mySQL.executeAsync("INSERT INTO Coins (name, uuid) VALUES (?,?) ON DUPLICATE KEY UPDATE name = VALUES(name)", name, uuid.toString());
     }
 
-    public void getCoins(UUID uuid, Consumer<String> amount) {
+    public void getCoins(UUID uuid, Consumer<Integer> amount) {
         this.mySQL.queryAsync("SELECT amount FROM Coins WHERE uuid = ?", rows -> {
             if (rows != null && rows.first() != null) {
-                amount.accept(rows.first().getString("amount"));
+                amount.accept(rows.first().getInt("amount"));
                 return;
             }
             amount.accept(null);
@@ -37,7 +37,7 @@ public class CoinsRepository {
     }
 
     public void resetCoins(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Coins SET amount = GREATEST(0, amount - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Coins SET amount = 0 WHERE uuid = ?", uuid.toString());
     }
 
 }

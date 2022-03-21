@@ -6,33 +6,29 @@ import ch.luca.hydroslide.bungeecord.config.MotdConfig;
 import ch.luca.hydroslide.bungeecord.config.MySQLConfig;
 import ch.luca.hydroslide.bungeecord.config.SlotConfig;
 import ch.luca.hydroslide.bungeecord.listener.*;
-import ch.luca.hydroslide.bungeecord.manager.AutoMessageManager;
 import ch.luca.hydroslide.bungeecord.mysql.MySQL;
 import ch.luca.hydroslide.bungeecord.mysql.MySQLPunish;
 import ch.luca.hydroslide.bungeecord.mysql.repository.*;
 import co.aikar.commands.BungeeCommandManager;
-import de.crafter75.perms.global.mojang.NameToUUIDResolver;
 import lombok.Getter;
 import net.cubespace.Yamler.Config.InvalidConfigurationException;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public class HydroSlide extends Plugin {
 
     @Getter
     private static HydroSlide instance;
-    private static AutoMessageManager autoMessageManager;
     private static MySQL mySQL;
-    private NameToUUIDResolver nameToUUIDResolver;
-    private ProfileRepository profileRepository;
+    public int count = 10;
 
     public static ArrayList<ProxiedPlayer> inSupport = new ArrayList<>();
     public static ArrayList<ProxiedPlayer> needHelp = new ArrayList<>();
@@ -43,6 +39,7 @@ public class HydroSlide extends Plugin {
     public static HashMap<String, String> reportchatlog = new HashMap<>();
 
     PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
+    BungeeCommandManager bungeeCommandManager = new BungeeCommandManager(this);
 
     @Getter
     private static BanMuteHistoryRepository banMuteHistoryRepository;
@@ -72,33 +69,27 @@ public class HydroSlide extends Plugin {
         if(!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
-        mySQL = new MySQL("localhost", "bungeecord", "root", "password", 3306);
+        mySQL = new MySQL("localhost", "bungeecord", "root", "wqfj9X3v9cPMUrfS", 3306);
         banMuteHistoryRepository = new BanMuteHistoryRepository(mySQL);
         playerInfoRepository = new PlayerInfoRepository(mySQL);
         coinsRepository = new CoinsRepository(mySQL);
         logTeamRepository = new LogTeamRepository(mySQL);
         teamStatsRepository = new TeamStatsRepository(mySQL);
-        autoMessageManager.startAutoMessages();
-        SlotConfig.loadSlots();
+        startAutoMessages();
         MotdConfig.loadMotd();
+        SlotConfig.loadSlots();
         MaintenanceConfig.loadMaintenance();
         MySQLPunish.loadFile();
         MySQLPunish.connect();
         MySQLPunish.createTables();
         MySQLConfig config;
         try {
-            if (!this.getDataFolder().exists()) {
-                this.getDataFolder().mkdir();
-            }
             config = new MySQLConfig(new File(this.getDataFolder(), "extraCommandsMySQL.yml"));
             config.init();
         } catch (InvalidConfigurationException e) {
             e.printStackTrace();
             return;
         }
-        this.profileRepository = new ProfileRepository(new MySQL(config.getProfileHost(), config.getProfileDatabase(), config.getProfileUser(), config.getProfilePassword(), config.getProfilePort()));
-        this.nameToUUIDResolver = new NameToUUIDResolver();
-
         this.tryJumpBanRepository = new TryJumpBanRepository(new MySQL(config.getTryJumpHost(), config.getTryJumpDatabase(), config.getTryJumpUser(), config.getTryJumpPassword(), config.getTryJumpPort()));
         MySQL lobbyMySQL = new MySQL(config.getLobbyHost(), config.getLobbyDatabase(), config.getLobbyUser(),
                 config.getLobbyPassword(), config.getLobbyPort());
@@ -131,11 +122,11 @@ public class HydroSlide extends Plugin {
         pluginManager.registerCommand(HydroSlide.getInstance(), new Hub("hub"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Hub("l"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Hub("lobby"));
+        pluginManager.registerCommand(HydroSlide.getInstance(), new LobbyCases("lobbycases"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new JoinMe("joinme"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new JumpTo("jumpto"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Kick("kick"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new List("list"));
-        BungeeCommandManager.getCurrentCommandManager().registerCommand(new LobbyCases(this));
         pluginManager.registerCommand(HydroSlide.getInstance(), new LogTeam("logteam"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Lolroflcoperxxdq("lolroflcoperxxdq"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Maintenance("maintenance"));
@@ -150,7 +141,7 @@ public class HydroSlide extends Plugin {
         pluginManager.registerCommand(HydroSlide.getInstance(), new PartyChat("partychat"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new PartyChat("pc"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Ping("ping"));
-        BungeeCommandManager.getCurrentCommandManager().registerCommand(new PrizeWheelSpins(this));
+        pluginManager.registerCommand(HydroSlide.getInstance(), new PrizeWheelSpins("prizewheelspins"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Report("report"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new ReportEdit("reportedit"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Reports("reports"));
@@ -162,7 +153,7 @@ public class HydroSlide extends Plugin {
         pluginManager.registerCommand(HydroSlide.getInstance(), new TeamChat("teamchat"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new TeamStats("teamstats"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new TestServer("testserver"));
-        BungeeCommandManager.getCurrentCommandManager().registerCommand(new TryJumpUnban(this));
+        pluginManager.registerCommand(HydroSlide.getInstance(), new TryJumpUnban("tryjumpunban"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Unban("unban"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Unmute("unmute"));
         pluginManager.registerCommand(HydroSlide.getInstance(), new Userinfo("userinfo"));
@@ -186,5 +177,31 @@ public class HydroSlide extends Plugin {
     public void onDisable() {
         mySQL.disconnect();
         MySQLPunish.close();
+    }
+
+    public void startAutoMessages() {
+        ProxyServer.getInstance().getScheduler().schedule(HydroSlide.getInstance(), () -> {
+            if(count == 10) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fUnsere Regeln findest du auf unserem Discord.");
+            } else if(count == 9) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fAlle Neuigkeiten findest du im #neuigkeiten Channel auf unserem Discord.");
+            } else if(count == 8) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fDu hast eine Frage? Nutze unseren Discord Ticketsupport.");
+            } else if(count == 7) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fDu willst zur Crew gehören? Auf unserer Webseite findest du alle Infos dazu.");
+            } else if(count == 6) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fFalls du einen Bug gefunden hast, melde ihn auf unserem Discord.");
+            } else if(count == 5) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fDu willst uns unterstützen? Besuche dafür unseren Online-Shop.");
+            } else if(count == 4) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fDu bist YouTuber oder Streamer? Bewerbe dich auf unserer Webseite als Promoter und profitiere von exklusiven Vorteilen.");
+            } else if(count == 3) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fWichtige Informationen zum Server, dessen Vision und Entstehung findest du auf unserer Webseite.");
+            } else if(count == 2) {
+                ProxyServer.getInstance().broadcast(HydroSlide.getInstance().getPrefix() + "§fFalls du Vorschläge oder Verbesserungen hast, kannst du diese auf unserem Discord im #vorschläge Channel einreichen.");
+                count = 11;
+            }
+            count --;
+        }, 0, 5, TimeUnit.MINUTES);
     }
 }

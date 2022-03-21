@@ -20,7 +20,9 @@ public class Coins extends Command {
         }
         ProxiedPlayer p = (ProxiedPlayer) sender;
         if(args.length == 0) {
-            HydroSlide.getCoinsRepository().getCoins(p.getUniqueId(), coins -> p.sendMessage(HydroSlide.getInstance().getPrefix() + "Deine aktuellen Coins betragen §6" + CoinsManager.asString(Integer.parseInt(coins)) + " Coins§7."));
+            HydroSlide.getCoinsRepository().getCoins(p.getUniqueId(), coins -> {
+                p.sendMessage(HydroSlide.getInstance().getPrefix() + "Deine aktuellen Coins betragen §6" + CoinsManager.asString(coins) + " Coins§7.");
+            });
         } else {
             String name = args[0];
             HydroSlide.getPlayerInfoRepository().getUUID(name, uuid -> {
@@ -28,7 +30,9 @@ public class Coins extends Command {
                     p.sendMessage(HydroSlide.getInstance().getPlayerNeverOnline());
                     return;
                 }
-                HydroSlide.getCoinsRepository().getCoins(uuid, coins -> p.sendMessage(HydroSlide.getInstance().getPrefix() + "Der Spieler §e" + name + " §7hat §6" + CoinsManager.asString(Integer.parseInt(coins))  + " Coins§7."));
+                HydroSlide.getCoinsRepository().getCoins(uuid, coins -> {
+                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "Der Spieler §e" + name + " §7hat §6" + CoinsManager.asString(coins)  + " Coins§7.");
+                });
             });
         }
     }

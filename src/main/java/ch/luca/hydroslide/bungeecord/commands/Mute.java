@@ -45,6 +45,10 @@ public class Mute extends Command {
                     }
                     String name = args[0];
                     HydroSlide.getPlayerInfoRepository().getUUID(name, uuid -> {
+                        if(uuid == null) {
+                            p.sendMessage(HydroSlide.getInstance().getPlayerNeverOnline());
+                            return;
+                        }
                         HydroSlide.getPlayerInfoRepository().getMutePoints(uuid, mutePoints -> {
                             try {
                                 if (!MuteRepository.getIsMuted(UUIDFetcher.getUUID(name).toString())) {

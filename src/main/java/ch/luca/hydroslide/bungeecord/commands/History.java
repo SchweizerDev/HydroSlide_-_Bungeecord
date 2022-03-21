@@ -6,11 +6,16 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.time.format.DateTimeFormatter;
+
 public class History extends Command {
 
     public History(String command) {
         super(command);
     }
+
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm:ss 'Uhr'");
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -42,6 +47,7 @@ public class History extends Command {
                             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Ban §c" + id + "§7:");
                             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Grund: §6" + entry.getReason());
                             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Gebannt von: §a" + entry.getPunisherName());
+                            p.sendMessage(HydroSlide.getInstance().getPrefix() + "Gebannt am: §b" + FORMATTER.format(entry.getDate()));
                             id++;
                         }
                     });
@@ -57,6 +63,7 @@ public class History extends Command {
                             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Mute §c" + id + "§7:");
                             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Grund: §6" + entry.getReason());
                             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Gemutet von: §a" + entry.getPunisherName());
+                            p.sendMessage(HydroSlide.getInstance().getPrefix() + "Gemutet am: §b" + FORMATTER.format(entry.getDate()));
                             id++;
                         }
                     });

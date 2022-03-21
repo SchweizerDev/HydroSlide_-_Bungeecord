@@ -46,6 +46,10 @@ public class Ban extends Command {
                     }
                     String name = args[0];
                     HydroSlide.getPlayerInfoRepository().getUUID(name, uuid -> {
+                        if(uuid == null) {
+                            p.sendMessage(HydroSlide.getInstance().getPlayerNeverOnline());
+                            return;
+                        }
                         HydroSlide.getPlayerInfoRepository().getBanPoints(uuid, banPoints -> {
                             try {
                                 if (!BanRepository.getIsBanned(UUIDFetcher.getUUID(name).toString())) {

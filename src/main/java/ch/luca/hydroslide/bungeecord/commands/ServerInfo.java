@@ -35,7 +35,7 @@ public class ServerInfo extends Command {
             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Version: §e" + System.getProperty("os.version"));
             p.sendMessage(HydroSlide.getInstance().getPrefix() + "Java Version: §e" + System.getProperty("java.version"));
         } else {
-            p.sendMessage(HydroSlide.getInstance().getPrefixUse() + "serverinfo.");
+            p.sendMessage(HydroSlide.getInstance().getPrefixUse() + "serverinfo");
         }
     }
 }

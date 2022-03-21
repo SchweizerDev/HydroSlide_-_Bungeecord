@@ -72,13 +72,11 @@ public class Party extends Command {
                 anfragen.add(p.getName());
                 partyinvite.put(target.getName(), anfragen);
                 target.sendMessage(HydroSlide.getInstance().getPrefix() + "Der Spieler §e" + p.getName() + " §7hat dich in eine §5Party §7eingeladen.");
-                TextComponent annehmen = new TextComponent(HydroSlide.getInstance().getPrefix() + "§7[§aAnnehmen§7]");
-                annehmen.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§8§o*Klicke* §7um der Party zu betreten.").create()));
-                annehmen.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + p.getName()));
-                TextComponent ablehnen = new TextComponent(HydroSlide.getInstance().getPrefix() + "§7[§cAblehnen§7]");
-                ablehnen.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§8§o*Klicke* §7um die Einladung abzulehnen.").create()));
-                ablehnen.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny " + p.getName()));
-                target.sendMessage(annehmen + " §8| " + ablehnen);
+                TextComponent accept = new TextComponent("§7[§aAnnehmen§7]");
+                accept.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + p.getName()));
+                TextComponent deny = new TextComponent("§7[§cAblehnen§7]");
+                deny.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party deny " + p.getName()));
+                target.sendMessage(new TextComponent(HydroSlide.getInstance().getPrefix() + "Funktionen: "), new TextComponent(accept), new TextComponent(" §7| "), new TextComponent(deny));
                 p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast §e" + target.getName() + " §7in die Party eingeladen.");
                 ProxyServer.getInstance().getScheduler().schedule(HydroSlide.getInstance(), new Runnable() {
                     @Override

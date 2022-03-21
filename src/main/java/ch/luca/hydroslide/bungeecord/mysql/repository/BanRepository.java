@@ -19,7 +19,7 @@ public class BanRepository {
             long millis = seconds * 1000;
             end = current + millis;
         }
-        MySQLPunish.update("INSERT INTO Bannedplayers (end, uuid, end, reason, banner) VALUES ('" + name + "','" + uuid + "','" + end + "','" + reason + "','" + banner + "')");
+        MySQLPunish.update("INSERT INTO Bannedplayers (name, uuid, end, reason, banner) VALUES ('" + name + "','" + uuid + "','" + end + "','" + reason + "','" + banner + "')");
         if (ProxyServer.getInstance().getPlayer(name) != null) {
             ProxyServer.getInstance().getPlayer(name).disconnect( "§cDu wurdest von §bHydroSlide.eu §cgebannt!\n\n§7Grund: §6" + getReason(uuid) +
                     " \n\n§7Du kannst einen Entbannungsantrag auf §ewww.hydroslide.eu §7schreiben.");

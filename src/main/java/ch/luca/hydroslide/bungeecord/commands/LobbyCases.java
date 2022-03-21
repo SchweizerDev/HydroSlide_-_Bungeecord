@@ -1,146 +1,51 @@
 package ch.luca.hydroslide.bungeecord.commands;
 
+
 import ch.luca.hydroslide.bungeecord.HydroSlide;
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.HelpCommand;
-import co.aikar.commands.annotation.Subcommand;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
 
-import java.util.UUID;
+public class LobbyCases extends Command {
 
-@AllArgsConstructor
-@CommandAlias("lobbycases")
-public class LobbyCases extends BaseCommand {
-
-    private final HydroSlide hydroSlide;
-
-    @Default
-    @HelpCommand
-    public void onHelp(CommandSender commandSender) {
-        if (commandSender instanceof ProxiedPlayer) {
-            ProxiedPlayer player = (ProxiedPlayer) commandSender;
-            if (!player.hasPermission("hydroslide.lobbycases")) {
-                player.sendMessage(HydroSlide.getInstance().getNoPermission());
-                return;
-            }
-        }
-        commandSender.sendMessage(HydroSlide.getInstance().getPrefixUse() + "lobbycases <add|remove> <Name> <Anzahl>");
+    public LobbyCases(String command) {
+        super(command);
     }
 
-    @Subcommand("add")
-    public void onAddCases(CommandSender commandSender, @Default() String name, @Default("1") String amount) {
-        if (commandSender instanceof ProxiedPlayer) {
-            ProxiedPlayer player = (ProxiedPlayer) commandSender;
-            if (!player.hasPermission("hydroslide.lobbycases")) {
-                player.sendMessage(HydroSlide.getInstance().getNoPermission());
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof ProxiedPlayer)) {
+            sender.sendMessage(HydroSlide.getInstance().getNoPlayer());
+            return;
+        }
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        if(!p.hasPermission("hydroslide.lobbycases")) {
+            p.sendMessage(HydroSlide.getInstance().getNoPermission());
+            return;
+        }
+        if(args.length < 2) {
+            p.sendMessage(HydroSlide.getInstance().getPrefixUse() + "lobbycases <add|remove> <Spieler> <Anzahl>");
+            return;
+        }
+        String name = args[1];
+        HydroSlide.getPlayerInfoRepository().getUUID(name, uuid -> {
+            if(uuid == null) {
+                p.sendMessage(HydroSlide.getInstance().getPlayerNeverOnline());
                 return;
             }
-        }
-        if (name.isEmpty()) {
-            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cDu musst ein Namen angeben.");
-            return;
-        }
-        int caseAmount;
-        try {
-            caseAmount = Integer.parseInt(amount);
-        } catch (NumberFormatException e) {
-            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cGib eine Zahl an.");
-            return;
-        }
-        ProxyServer.getInstance().getScheduler().runAsync(this.hydroSlide, () -> {
-            Futures.addCallback(this.hydroSlide.getProfileRepository().getUniqueId(name), new FutureCallback<UUID>() {
-                @Override
-                public void onSuccess(UUID uuid) {
-                    if (uuid == null) {
-                        try {
-                            uuid = hydroSlide.getNameToUUIDResolver().resolve(name);
-                        } catch (Exception e) {
-                            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cEine UUID zum Namen wurde nicht gefunden.");
-                            return;
-                        }
-                    }
-                    Futures.addCallback(hydroSlide.getLobbyCaseRepository().addCases(uuid, caseAmount), new FutureCallback<Integer>() {
-                        @Override
-                        public void onSuccess(Integer integer) {
-                            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "Der Spieler §e" + name + " §7hat §6" + caseAmount + " §6Lobbycases §7erhalten.");
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            throwable.printStackTrace();
-                            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cEs ist ein Fehler aufgetreten.");
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    throwable.printStackTrace();
-                    commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cEs ist ein Fehler aufgetreten.");
-                }
-            });
-        });
-    }
-
-    @Subcommand("remove")
-    public void onRemoveCases(CommandSender commandSender, @Default() String name, @Default("1") String amount) {
-        if (commandSender instanceof ProxiedPlayer) {
-            ProxiedPlayer player = (ProxiedPlayer) commandSender;
-            if (!player.hasPermission("hydroslide.lobbycases")) {
-                player.sendMessage(HydroSlide.getInstance().getNoPermission());
-                return;
+            int amount = 0;
+            try {
+                amount = Integer.parseInt(args[2]);
+            } catch (NumberFormatException exception) {
+                p.sendMessage(HydroSlide.getInstance().getPrefix() + "§cGib eine Zahl an.");
             }
-        }
-        if (name.isEmpty()) {
-            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cDu musst ein Namen angeben.");
-            return;
-        }
-        int caseAmount;
-        try {
-            caseAmount = Integer.parseInt(amount);
-        } catch (NumberFormatException e) {
-            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cGib eine Zahl an.");
-            return;
-        }
-        ProxyServer.getInstance().getScheduler().runAsync(this.hydroSlide, () -> {
-            Futures.addCallback(this.hydroSlide.getProfileRepository().getUniqueId(name), new FutureCallback<UUID>() {
-                @Override
-                public void onSuccess(UUID uuid) {
-                    if (uuid == null) {
-                        try {
-                            uuid = hydroSlide.getNameToUUIDResolver().resolve(name);
-                        } catch (Exception e) {
-                            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cEine UUID zum Namen wurde nicht gefunden.");
-                            return;
-                        }
-                    }
-                    Futures.addCallback(hydroSlide.getLobbyCaseRepository().removeCases(uuid, caseAmount), new FutureCallback<Integer>() {
-                        @Override
-                        public void onSuccess(Integer integer) {
-                            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "Dem Spieler §e" + name + " §7wurden §6" + caseAmount + " §6Lobbycases §7entfernt.");
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            throwable.printStackTrace();
-                            commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cEs ist ein Fehler aufgetreten.");
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    throwable.printStackTrace();
-                    commandSender.sendMessage(HydroSlide.getInstance().getPrefix() + "§cEs ist ein Fehler aufgetreten.");
-                }
-            });
+            if(args[0].equalsIgnoreCase("add")) {
+                HydroSlide.getInstance().getLobbyCaseRepository().addCases(uuid, amount);
+                p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast §e" + name + " §a" + amount + " Lobbyschatztruhen §7hinzugefügt.");
+            } else if(args[0].equalsIgnoreCase("remove")) {
+                HydroSlide.getInstance().getLobbyCaseRepository().removeCases(uuid, amount);
+                p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast §e" + name + " §a" + amount + " Lobbyschatztruhen §7entfernt.");
+            }
         });
     }
 }

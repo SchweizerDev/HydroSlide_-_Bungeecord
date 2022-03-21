@@ -36,7 +36,7 @@ public class Reset extends Command {
                     HydroSlide.getTeamStatsRepository().resetMutes(uuid);
                     HydroSlide.getTeamStatsRepository().resetReports(uuid);
                     HydroSlide.getTeamStatsRepository().resetSupports(uuid);
-                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast die Teamstatistiken von §e" + target.getName() + " §7zurückgesetzt.");
+                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast die Teamstatistiken von §e" + name + " §7zurückgesetzt.");
                 });
             } else if (args[1].equalsIgnoreCase("banpoints")) {
                 HydroSlide.getPlayerInfoRepository().getUUID(name, uuid -> {
@@ -45,7 +45,7 @@ public class Reset extends Command {
                         return;
                     }
                     HydroSlide.getPlayerInfoRepository().resetBanPoints(uuid);
-                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast die Banpunkte von §e" + target.getName() + " §7zurückgesetzt.");
+                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast die Banpunkte von §e" + name + " §7zurückgesetzt.");
                 });
             } else if (args[1].equalsIgnoreCase("mutepoints")) {
                 HydroSlide.getPlayerInfoRepository().getUUID(name, uuid -> {
@@ -54,7 +54,7 @@ public class Reset extends Command {
                         return;
                     }
                     HydroSlide.getPlayerInfoRepository().resetMutePoints(uuid);
-                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast die Mutepunkte von §e" + target.getName() + " §7zurückgesetzt.");
+                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast die Mutepunkte von §e" + name + " §7zurückgesetzt.");
                 });
             } else if (args[1].equalsIgnoreCase("coins")) {
                 HydroSlide.getPlayerInfoRepository().getUUID(name, uuid -> {

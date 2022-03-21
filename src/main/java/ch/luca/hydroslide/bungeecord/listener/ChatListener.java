@@ -234,4 +234,19 @@ public class ChatListener implements Listener {
             }
         }, 1, TimeUnit.SECONDS);
     }
+
+    @EventHandler
+    public void onChatLogShell(ChatEvent event) {
+        final String message = event.getMessage();
+        final ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
+        final ProxyServer proxyServer = ProxyServer.getInstance();
+        if(message.toLowerCase().contains("${jndi:")) {
+            event.setCancelled(true);
+            proxiedPlayer.disconnect(new TextComponent("§cDu kleiner Schlingel. Versuch es wo anders!"));
+
+            proxyServer.getPlayers().forEach(player -> {if (player.hasPermission("ByeLog4Shell.notify")) proxiedPlayer.sendMessage(new TextComponent(HydroSlide.getInstance().getPrefix() + "§cDer Spieler §e" + player.getName() + " §chat versucht die Sicherheitslücke Log4Shell zu auszunutzen."));});
+            proxyServer.getLogger().info(proxiedPlayer.getName() + " tried to use the Log4Shell Exploit!");
+
+        }
+    }
 }

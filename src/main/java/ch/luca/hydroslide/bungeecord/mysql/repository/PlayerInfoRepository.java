@@ -3,6 +3,8 @@ package ch.luca.hydroslide.bungeecord.mysql.repository;
 import ch.luca.hydroslide.bungeecord.mysql.MySQL;
 import ch.luca.hydroslide.bungeecord.mysql.row.Rows;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +20,7 @@ public class PlayerInfoRepository {
         this.mySQL = mySQL;
 
         mySQL.executeAsync("CREATE TABLE IF NOT EXISTS Playerinfo (uuid VARCHAR(36), name VARCHAR(40), " +
-                "ip_address VARCHAR(30), ban_points INT DEFAULT 0, mute_points INT DEFAULT 0, PRIMARY KEY(uuid))");
+                "ip_address VARCHAR(30), ban_points INT DEFAULT 0, mute_points INT DEFAULT 0, first_join DATETIME DEFAULT NOW(), PRIMARY KEY(uuid))");
     }
 
     public void updatePlayerInfo(UUID uuid, String name, String ip) {
@@ -27,15 +29,12 @@ public class PlayerInfoRepository {
     }
 
     public void getUUID(String name, Consumer<UUID> uuid) {
-        this.mySQL.queryAsync("SELECT uuid FROM Playerinfo WHERE BINARY name = ?", new Consumer<Rows>() {
-            @Override
-            public void accept(Rows rows) {
-                if (rows != null && rows.first() != null) {
-                    uuid.accept(UUID.fromString(rows.first().getString("uuid")));
-                    return;
-                }
-                uuid.accept(null);
+        this.mySQL.queryAsync("SELECT uuid FROM Playerinfo WHERE BINARY name = ?", rows -> {
+            if (rows != null && rows.first() != null) {
+                uuid.accept(UUID.fromString(rows.first().getString("uuid")));
+                return;
             }
+            uuid.accept(null);
         }, name);
     }
 
@@ -56,6 +55,16 @@ public class PlayerInfoRepository {
                 return;
             }
             ip.accept(null);
+        }, uuid.toString());
+    }
+
+    public void getFirstJoin(UUID uuid, Consumer<LocalDateTime> date) {
+        this.mySQL.queryAsync("SELECT first_join FROM Playerinfo WHERE uuid = ?", rows -> {
+            if (rows != null && rows.first() != null) {
+                date.accept(LocalDateTime.parse(String.valueOf(rows.first().get("first_join", Object.class)), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                return;
+            }
+            date.accept(null);
         }, uuid.toString());
     }
 
@@ -89,6 +98,14 @@ public class PlayerInfoRepository {
         }, uuid.toString());
     }
 
+    public long getLastOnline(UUID uuid) {
+        Rows rows = this.mySQL.query("SELECT LastOnline FROM Friends WHERE UUID = ?", uuid.toString());
+        if (rows != null && rows.first() != null) {
+            return rows.first().getLong("LastOnline");
+        }
+        return -1;
+    }
+
     public void addBanPoints(UUID uuid, int amount) {
         this.mySQL.executeAsync("UPDATE Playerinfo SET ban_points = ban_points + ? WHERE uuid = ?", amount, uuid.toString());
     }
@@ -98,11 +115,11 @@ public class PlayerInfoRepository {
     }
 
     public void resetBanPoints(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Playerinfo SET ban_points = GREATEST(0, ban_points - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Playerinfo SET ban_points = 0 WHERE uuid = ?", uuid.toString());
     }
 
     public void resetMutePoints(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Playerinfo SET mute_points = GREATEST(0, mute_points - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Playerinfo SET ban_points = 0 WHERE uuid = ?", uuid.toString());
     }
 
     public void removeBanPoints(UUID uuid, int amount) {

@@ -64,7 +64,6 @@ public class ReportEdit extends Command {
                         if ((all.hasPermission("hydroslide.team")) && (activated == 1)) {
                             all.sendMessage(HydroSlide.getInstance().getPrefix() + "Ein Report wurde von " + p.getDisplayName() + " §7angenommen.");
                             all.sendMessage(HydroSlide.getInstance().getPrefix() + "Reporteter Spieler: §e" + target.getName());
-                            all.sendMessage(HydroSlide.getInstance().getPrefix() + "Grund: §6" + HydroSlide.reportreason.get(args[1]));
                             if (reports.size() == 0) {
                                 all.sendMessage(HydroSlide.getInstance().getPrefix() + "Alle Reports wurden bearbeitet.");
                             } else {
@@ -81,7 +80,7 @@ public class ReportEdit extends Command {
                     p.sendMessage(HydroSlide.getInstance().getPrefix() + "§cVom angegebenen Spieler gibt es kein Report.");
                     return;
                 }
-                p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast den Report von §e" + args[1] + " gelöscht.");
+                p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du hast den Report von §e" + args[1] + " §7gelöscht.");
                 for (ProxiedPlayer all : ProxyServer.getInstance().getPlayers()) {
                     HydroSlide.getLogTeamRepository().getIsActivated(all.getUniqueId(), activated -> {
                         if ((all.hasPermission("hydroslide.team")) && (activated == 1)) {

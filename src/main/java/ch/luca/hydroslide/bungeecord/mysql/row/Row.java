@@ -70,4 +70,27 @@ public class Row {
 
         return this.values.get(columnName);
     }
+
+    public <T> T get( String columnName, Class<T> clazz ) {
+        // Make name lowercase
+        columnName = columnName.toLowerCase();
+
+        // Check if column name exists
+        if ( !this.values.containsKey( columnName ) ) {
+            return null;
+        }
+        // Get object from column name
+        Object object = this.values.get( columnName );
+
+        if(object == null) {
+            return null;
+        }
+
+        // Check if object is instance of class
+        if ( clazz.isInstance( object ) ) {
+            // Cast object
+            return clazz.cast( object );
+        }
+        return null;
+    }
 }

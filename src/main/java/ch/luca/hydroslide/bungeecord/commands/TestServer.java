@@ -31,11 +31,11 @@ public class TestServer extends Command {
     }
 
     private static void connectTestServer(ProxiedPlayer p) {
-            if (p.getServer().getInfo().getName().startsWith("TestServer-01")) {
-                p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du befindest dich bereits auf dem TestServer.");
-            } else {
-                p.connect(ProxyServer.getInstance().getServerInfo("TestServer-01"));
-                p.sendMessage(HydroSlide.getInstance().getPrefix() + "Willkommen auf dem TestServer-01.");
-            }
+        if (p.getServer().getInfo().getName().startsWith("TestServer-01")) {
+            p.sendMessage(HydroSlide.getInstance().getPrefix() + "Du befindest dich bereits auf dem TestServer.");
+        } else {
+            p.connect(ProxyServer.getInstance().getServerInfo("TestServer-01"));
+            p.sendMessage(HydroSlide.getInstance().getPrefix() + "Willkommen auf dem TestServer-01.");
+        }
     }
 }

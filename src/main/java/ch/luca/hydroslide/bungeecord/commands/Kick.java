@@ -16,38 +16,38 @@ public class Kick extends Command {
     public void execute(CommandSender sender, String[] args) {
         if(sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
-            if(!p.hasPermission("hydroslide.kick")) {
+            if (!p.hasPermission("hydroslide.kick")) {
                 p.sendMessage(HydroSlide.getInstance().getNoPermission());
                 return;
             }
-                if(args.length > 1) {
-                    ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
-                    String msg = "";
-                    for(int i = 1; i < args.length; i++) {
-                        msg = msg + args[i] + " ";
-                    }
-                    if (args[0].equalsIgnoreCase(p.getName())) {
-                        p.sendMessage(HydroSlide.getInstance().getPrefix() + "§cDu kannst dich selber nicht bestrafen.");
-                        return;
-                    }
-                    if(target != null) {
-                        target.disconnect("§cDu wurdest von §bHydroSlide.eu §cgebannt!\n\n§7Grund: §6" + msg);
-                        for(ProxiedPlayer all : ProxyServer.getInstance().getPlayers()) {
-                            String finalMsg = msg;
-                            HydroSlide.getLogTeamRepository().getIsActivated(all.getUniqueId(), activated -> {
-                                if ((all.hasPermission("hydroslide.team")) && (activated == 1)) {
-                                    all.sendMessage(HydroSlide.getInstance().getPrefix() + "Der Spieler §e" + target.getName() + " §7wurde §cgekickt§7!");
-                                    all.sendMessage(HydroSlide.getInstance().getPrefix() + "Gekickt von: §a" + p.getName());
-                                    all.sendMessage(HydroSlide.getInstance().getPrefix() + "Grund: §6" + finalMsg);
-                                }
-                            });
-                        }
-                    } else {
-                        p.sendMessage(HydroSlide.getInstance().getPlayerNotOnline());
+            if (args.length > 1) {
+                ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
+                String msg = "";
+                for (int i = 1; i < args.length; i++) {
+                    msg = msg + args[i] + " ";
+                }
+                if (args[0].equalsIgnoreCase(p.getName())) {
+                    p.sendMessage(HydroSlide.getInstance().getPrefix() + "§cDu kannst dich selber nicht bestrafen.");
+                    return;
+                }
+                if (target != null) {
+                    target.disconnect("§cDu wurdest von §bHydroSlide.eu §cgebannt!\n\n§7Grund: §6" + msg);
+                    for (ProxiedPlayer all : ProxyServer.getInstance().getPlayers()) {
+                        String finalMsg = msg;
+                        HydroSlide.getLogTeamRepository().getIsActivated(all.getUniqueId(), activated -> {
+                            if ((all.hasPermission("hydroslide.team")) && (activated == 1)) {
+                                all.sendMessage(HydroSlide.getInstance().getPrefix() + "Der Spieler §e" + target.getName() + " §7wurde §cgekickt§7!");
+                                all.sendMessage(HydroSlide.getInstance().getPrefix() + "Gekickt von: §a" + p.getName());
+                                all.sendMessage(HydroSlide.getInstance().getPrefix() + "Grund: §6" + finalMsg);
+                            }
+                        });
                     }
                 } else {
-                    p.sendMessage(HydroSlide.getInstance().getPrefixUse() + "kick <Spieler> <Grund>");
+                    p.sendMessage(HydroSlide.getInstance().getPlayerNotOnline());
                 }
+            } else {
+                p.sendMessage(HydroSlide.getInstance().getPrefixUse() + "kick <Spieler> <Grund>");
+            }
         } else {
             if(args.length > 1) {
                 ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);

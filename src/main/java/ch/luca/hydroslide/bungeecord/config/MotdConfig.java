@@ -28,9 +28,9 @@ public class MotdConfig {
                 ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, file);
             }
             motdNormal1 = getConfig().getString("motdNormal1");
-            motdNormal1 = getConfig().getString("motdNormal2");
-            motdNormal1 = getConfig().getString("motdMaintenance1");
-            motdNormal1 = getConfig().getString("motdMaintenance2");
+            motdNormal2 = getConfig().getString("motdNormal2");
+            motdMaintenance1 = getConfig().getString("motdMaintenance1");
+            motdMaintenance2 = getConfig().getString("motdMaintenance2");
         } catch (IOException e) {
             e.printStackTrace();
         }

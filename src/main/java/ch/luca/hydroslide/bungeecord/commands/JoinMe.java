@@ -31,10 +31,10 @@ public class JoinMe extends Command {
             p.sendMessage(HydroSlide.getInstance().getNoPermission());
             return;
         }
-        long difference = System.currentTimeMillis() - time.get(p);
         if(args.length == 0) {
             time.computeIfAbsent(p, k -> 0L);
-            if(System.currentTimeMillis() - time.get(p) < 60000L) {
+            long difference = System.currentTimeMillis() - (Long) time.get(p);
+            if(System.currentTimeMillis() - ((Long) time.get(p)) < 60000L) {
                 p.sendMessage(HydroSlide.getInstance().getPrefix() + "§cDu musst noch etwas warten...");
                 return;
             }

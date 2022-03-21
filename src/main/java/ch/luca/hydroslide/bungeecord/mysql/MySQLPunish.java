@@ -104,7 +104,7 @@ public class MySQLPunish {
                 config.set("mysql.Port", "3306");
                 config.set("mysql.Database", "bungeecord");
                 config.set("mysql.Username", "root");
-                config.set("mysql.Password", "password");
+                config.set("mysql.Password", "wqfj9X3v9cPMUrfS");
                 ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, file);
             }
             host = config.getString("mysql.Host");

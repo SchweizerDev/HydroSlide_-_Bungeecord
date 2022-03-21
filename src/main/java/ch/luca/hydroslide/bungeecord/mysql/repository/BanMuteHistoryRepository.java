@@ -5,6 +5,8 @@ import ch.luca.hydroslide.bungeecord.mysql.row.Row;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +20,7 @@ public class BanMuteHistoryRepository {
         this.mySQL = mySQL;
 
         mySQL.executeAsync("CREATE TABLE IF NOT EXISTS History (id INT AUTO_INCREMENT, type VARCHAR(30), " +
-                "uuid VARCHAR(36), name VARCHAR(40), reason VARCHAR(100), punisher_name VARCHAR(40), PRIMARY KEY(id))");
+                "uuid VARCHAR(36), name VARCHAR(40), reason VARCHAR(100), punisher_name VARCHAR(40), date DATETIME DEFAULT NOW(), PRIMARY KEY(id))");
     }
 
     public void addHistory(HistoryType type, UUID uuid, String name, String reason, String punisherName) {
@@ -52,9 +54,11 @@ public class BanMuteHistoryRepository {
 
         private final String punisherName;
 
+        private final LocalDateTime date;
+
         public static HistoryEntry fromRow(Row row) {
             return new HistoryEntry(HistoryType.valueOf(row.getString("type")), UUID.fromString(row.getString("uuid")),
-                    row.getString("name"), row.getString("reason"), row.getString("punisher_name"));
+                    row.getString("name"), row.getString("reason"), row.getString("punisher_name"), LocalDateTime.parse(String.valueOf(row.get("date", Object.class)), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         }
     }
 

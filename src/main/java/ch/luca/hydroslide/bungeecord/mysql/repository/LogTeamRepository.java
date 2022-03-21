@@ -42,6 +42,6 @@ public class LogTeamRepository {
     }
 
     public void setInactive(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Logteam SET activated = activated + 0 WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Logteam SET activated = activated - 1 WHERE uuid = ?", uuid.toString());
     }
 }

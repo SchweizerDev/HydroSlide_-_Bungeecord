@@ -19,50 +19,50 @@ public class TeamStatsRepository {
                 "UPDATE name = VALUES(name)", name, uuid.toString());
     }
 
-    public void getReports(UUID uuid, Consumer<String> reports) {
+    public void getReports(UUID uuid, Consumer<Integer> reports) {
         this.mySQL.queryAsync("SELECT reports FROM Teamstats WHERE uuid = ?", rows -> {
             if (rows != null && rows.first() != null) {
-                reports.accept(rows.first().getString("teamstats"));
+                reports.accept(rows.first().getInt("reports"));
                 return;
             }
             reports.accept(null);
         }, uuid.toString());
     }
 
-    public void getMutes(UUID uuid, Consumer<String> mutes) {
+    public void getMutes(UUID uuid, Consumer<Integer> mutes) {
         this.mySQL.queryAsync("SELECT mutes FROM Teamstats WHERE uuid = ?", rows -> {
             if (rows != null && rows.first() != null) {
-                mutes.accept(rows.first().getString("mutes"));
+                mutes.accept(rows.first().getInt("mutes"));
                 return;
             }
             mutes.accept(null);
         }, uuid.toString());
     }
 
-    public void getBans(UUID uuid, Consumer<String> bans) {
+    public void getBans(UUID uuid, Consumer<Integer> bans) {
         this.mySQL.queryAsync("SELECT bans FROM Teamstats WHERE uuid = ?", rows -> {
             if (rows != null && rows.first() != null) {
-                bans.accept(rows.first().getString("bans"));
+                bans.accept(rows.first().getInt("bans"));
                 return;
             }
             bans.accept(null);
         }, uuid.toString());
     }
 
-    public void getKicks(UUID uuid, Consumer<String> kicks) {
+    public void getKicks(UUID uuid, Consumer<Integer> kicks) {
         this.mySQL.queryAsync("SELECT kicks FROM Teamstats WHERE uuid = ?", rows -> {
             if (rows != null && rows.first() != null) {
-                kicks.accept(rows.first().getString("kicks"));
+                kicks.accept(rows.first().getInt("kicks"));
                 return;
             }
             kicks.accept(null);
         }, uuid.toString());
     }
 
-    public void getSupports(UUID uuid, Consumer<String> supports) {
+    public void getSupports(UUID uuid, Consumer<Integer> supports) {
         this.mySQL.queryAsync("SELECT supports FROM Teamstats WHERE uuid = ?", rows -> {
             if (rows != null && rows.first() != null) {
-                supports.accept(rows.first().getString("supports"));
+                supports.accept(rows.first().getInt("supports"));
                 return;
             }
             supports.accept(null);
@@ -76,7 +76,7 @@ public class TeamStatsRepository {
     }
 
     public void resetReports(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Teamstats SET reports = GREATEST(0, reports - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Teamstats SET reports = 0 WHERE uuid = ?", uuid.toString());
     }
 
     public void addMutes(UUID uuid, int mutes) {
@@ -84,7 +84,7 @@ public class TeamStatsRepository {
     }
 
     public void resetMutes(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Teamstats SET mutes = GREATEST(0, mutes - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Teamstats SET mutes = 0 WHERE uuid = ?", uuid.toString());
     }
 
     public void addBans(UUID uuid, int bans) {
@@ -92,7 +92,7 @@ public class TeamStatsRepository {
     }
 
     public void resetBans(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Teamstats SET bans = GREATEST(0, bans - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Teamstats SET bans = 0 WHERE uuid = ?", uuid.toString());
     }
 
     public void addKicks(UUID uuid, int kicks) {
@@ -100,7 +100,7 @@ public class TeamStatsRepository {
     }
 
     public void resetKicks(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Teamstats SET kicks = GREATEST(0, kicks - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Teamstats SET kicks = 0 WHERE uuid = ?", uuid.toString());
     }
 
     public void addSupports(UUID uuid, int supports) {
@@ -108,7 +108,7 @@ public class TeamStatsRepository {
     }
 
     public void resetSupports(UUID uuid) {
-        this.mySQL.executeAsync("UPDATE Teamstats SET supports = GREATEST(0, supports - ?) WHERE uuid = ?", uuid.toString());
+        this.mySQL.executeAsync("UPDATE Teamstats SET supports = 0 WHERE uuid = ?", uuid.toString());
     }
 }
 

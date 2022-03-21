@@ -25,31 +25,13 @@ public class LobbyCaseRepository {
         });
     }
 
-    public ListenableFuture<Integer> addCase(UUID uniqueId) {
-        return this.addCases(uniqueId, 1);
-    }
-
     public ListenableFuture<Integer> addCases(UUID uniqueId, int amount) {
-        return Futures.transformAsync(this.getCases(uniqueId), cases -> {
-            cases += amount;
-            return this.mySQL.execute2("REPLACE INTO lobby_cases VALUES (?,?)", uniqueId.toString(), cases);
-        });
-    }
-
-    public ListenableFuture<Integer> removeCase(UUID uniqueId) {
-        return this.removeCases(uniqueId, 1);
+        return this.mySQL.execute2("INSERT INTO lobby_cases (uuid, cases) VALUES (?,?) ON DUPLICATE KEY " +
+                "UPDATE cases = GREATEST(0, cases + VALUES(cases))", uniqueId.toString(), amount);
     }
 
     public ListenableFuture<Integer> removeCases(UUID uniqueId, int amount) {
-        return Futures.transformAsync(this.getCases(uniqueId), cases -> {
-            cases -= amount;
-            if (cases < 0) {
-                cases = 0;
-            }
-            if (cases == 0) {
-                return this.mySQL.execute2("DELETE FROM lobby_cases WHERE uuid = ?", uniqueId.toString());
-            }
-            return this.mySQL.execute2("REPLACE INTO lobby_cases VALUES (?,?)", uniqueId.toString(), cases);
-        });
+        return this.mySQL.execute2("INSERT INTO lobby_cases (uuid) VALUES (?) ON DUPLICATE KEY " +
+                "UPDATE cases = GREATEST(0, cases - ?)", uniqueId.toString(), amount);
     }
 }

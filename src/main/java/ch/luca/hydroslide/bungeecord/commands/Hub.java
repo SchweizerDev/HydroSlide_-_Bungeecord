@@ -19,7 +19,7 @@ public class Hub extends Command {
             return;
         }
         ProxiedPlayer p = (ProxiedPlayer) sender;
-        if(!p.getServer().getInfo().getName().equalsIgnoreCase("Lobby-01") || p.getServer().getInfo().getName().equalsIgnoreCase("SilentLobby-01")) {
+        if(!p.getServer().getInfo().getName().equalsIgnoreCase("Lobby-01")) {
             p.connect(ProxyServer.getInstance().getServerInfo("Lobby-01"));
         } else {
             p.sendMessage(HydroSlide.getInstance().getPrefix() + "§cDu befindest dich bereits in der Lobby.");
