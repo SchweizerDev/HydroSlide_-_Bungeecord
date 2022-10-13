@@ -69,7 +69,7 @@ public class HydroSlide extends Plugin {
         if(!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
-        mySQL = new MySQL("localhost", "bungeecord", "root", "wqfj9X3v9cPMUrfS", 3306);
+        mySQL = new MySQL("localhost", "bungeecord", "root", "password", 3306);
         banMuteHistoryRepository = new BanMuteHistoryRepository(mySQL);
         playerInfoRepository = new PlayerInfoRepository(mySQL);
         coinsRepository = new CoinsRepository(mySQL);
